@@ -1,5 +1,6 @@
 using System.Net;
 using Newtonsoft.Json;
+using CasSys.Application;
 using CasSys.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
@@ -32,6 +33,8 @@ namespace CasSys.WebApi
             services.AddCors();
 
             services.AddPersistence(Configuration);
+
+            services.AddApplication();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CasSys.Application\CasSys.Application.csproj" />
     <ProjectReference Include="..\CasSys.Persistence\CasSys.Persistence.csproj" />
   </ItemGroup>
 

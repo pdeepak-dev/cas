@@ -12,6 +12,15 @@ namespace CasSys.Persistence.Configurations
                 .ToTable("User");
 
             builder
+                .Property(x => x.FirstName).HasMaxLength(60);
+
+            builder
+                .Property(x => x.LastName).HasMaxLength(60);
+
+            builder
+                .Property(x => x.Gender).HasMaxLength(10);
+
+            builder
                 .Property(x => x.LockoutEnd).HasColumnType("datetime");
 
             builder

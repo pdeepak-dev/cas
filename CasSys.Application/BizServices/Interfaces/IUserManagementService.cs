@@ -2,9 +2,8 @@
 using CasSys.Application.Dtos;
 using System.Collections.Generic;
 using CasSys.Application.RequestModels;
-using CasSys.Domain.EntityFrameworkCore.Collections;
-using Microsoft.AspNetCore.Identity;
 using CasSys.Application.BizServices.Core;
+using CasSys.Domain.EntityFrameworkCore.Collections;
 
 namespace CasSys.Application.BizServices.Interfaces
 {
@@ -16,13 +15,14 @@ namespace CasSys.Application.BizServices.Interfaces
         IEnumerable<UserDto> GetUsers();
         Task<UserDto> GetUserById(string userId);
 
-        IPagedList<UserDto> GetUsers(int pageIndex, int pageSize);
+        OperationResult<IPagedList<UserDto>> GetUsers(int pageIndex, int pageSize);
 
-        UserDto CreateUser(UserRequestModel userResource);
+        Task<OperationResult> CreateUser(UserRequestModel userModel);
+
+        Task<OperationResult> UpdateUser(UserUpdateRequestModel userModel);
 
         IEnumerable<RoleDto> AllRoles { get; }
         IEnumerable<RoleDto> GetRoles();
-        Task<RoleDto> GetRoleById(string userId);
 
         OperationResult<IPagedList<RoleDto>> GetRoles(int pageIndex, int pageSize);
 

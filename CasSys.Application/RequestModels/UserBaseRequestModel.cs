@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CasSys.Application.RequestModels
+﻿namespace CasSys.Application.RequestModels
 {
     public abstract class UserBaseRequestModel
     {
+        public string UserId { get; set; }
     }
 }

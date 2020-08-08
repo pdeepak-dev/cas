@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using CasSys.Application.BizServices.Core;
-using CasSys.Application.BizServices.Interfaces;
-using CasSys.Application.Dtos;
-using CasSys.Application.RequestModels;
-using CasSys.Domain.Entities.Identity;
 using System.Linq;
 using System.Threading.Tasks;
+using CasSys.Application.Dtos;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
+using CasSys.Domain.Entities.Identity;
+using CasSys.Application.RequestModels;
+using CasSys.Application.BizServices.Core;
+using CasSys.Application.BizServices.Interfaces;
 using CasSys.Domain.EntityFrameworkCore.Collections;
 
 namespace CasSys.Application.BizServices
@@ -26,13 +26,48 @@ namespace CasSys.Application.BizServices
             this._mapper = mapper;
         }
 
-        public IEnumerable<UserDto> AllUsers => throw new System.NotImplementedException();
+        public IEnumerable<UserDto> AllUsers => GetUsers();
 
-        public IEnumerable<RoleDto> AllRoles => throw new System.NotImplementedException();
+        public IEnumerable<RoleDto> AllRoles => GetRoles();
 
-        public UserDto CreateUser(UserRequestModel userModel)
+        public async Task<OperationResult> CreateUser(UserRequestModel userModel)
         {
-            throw new System.NotImplementedException();
+            var user = new AppUser
+            {
+                FirstName = userModel.FirstName,
+                LastName = userModel.LastName,
+                Email = userModel.Email,
+                Gender = userModel.Gender
+            };
+
+            if (!userModel.IsEmployee)
+            {
+                user.UserName = userModel.UserName;
+            }
+
+            IdentityResult result = await _userManager.CreateAsync(user, userModel.Password);
+
+            if (result.Succeeded)
+            {
+                if (!userModel.IsEmployee)
+                {
+                    if (await _roleManager.RoleExistsAsync("Employeer"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Employeer");
+                    }
+                }
+                else
+                {
+                    if (await _roleManager.RoleExistsAsync("Employee"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Employee");
+                    }
+                }
+
+                return OperationResult.Success;
+            }
+            else
+                return OperationResult.Failed(GetErrors(result.Errors));
         }
 
         public async Task<UserDto> GetUserById(string userId)
@@ -46,9 +81,13 @@ namespace CasSys.Application.BizServices
             return _userManager.Users.Select(x => _mapper.Map<UserDto>(x));
         }
 
-        public IPagedList<UserDto> GetUsers(int pageIndex, int pageSize)
+        public OperationResult<IPagedList<UserDto>> GetUsers(int pageIndex, int pageSize)
         {
-            return _userManager.Users.Select(x => _mapper.Map<UserDto>(x)).ToPagedList<UserDto>(pageIndex, pageIndex);
+            var users = _userManager.Users
+                                .ToPagedList<AppUser, UserDto>(converter: x => x.Select(y => _mapper.Map<UserDto>(y)),
+                                pageIndex: pageIndex, pageSize: pageSize);
+
+            return OperationResult<IPagedList<UserDto>>.Success(users);
         }
 
         public async Task<OperationResult> CreateRoleAsync(RoleRequestModel roleModel)
@@ -59,28 +98,14 @@ namespace CasSys.Application.BizServices
             });
 
             if (result.Succeeded)
-            {
                 return OperationResult.Success;
-            }
             else
-            {
                 return OperationResult.Failed(GetErrors(result.Errors));
-            }
-        }
-
-        private string[] GetErrors(IEnumerable<IdentityError> errors)
-        {
-            return errors.Select(x => x.Description).ToArray();
         }
 
         public IEnumerable<RoleDto> GetRoles()
         {
             return _roleManager.Roles.Select(x => _mapper.Map<RoleDto>(x));
-        }
-
-        public Task<RoleDto> GetRoleById(string userId)
-        {
-            throw new System.NotImplementedException();
         }
 
         public OperationResult<IPagedList<RoleDto>> GetRoles(int pageIndex, int pageSize)
@@ -90,6 +115,32 @@ namespace CasSys.Application.BizServices
                                 pageIndex: pageIndex, pageSize: pageSize);
 
             return OperationResult<IPagedList<RoleDto>>.Success(roles);
+        }
+
+        public async Task<OperationResult> UpdateUser(UserUpdateRequestModel userModel)
+        {
+            var user = await _userManager.FindByIdAsync(userModel.UserId);
+
+            if (user != null)
+            {
+                user.FirstName = userModel.FirstName;
+                user.LastName = userModel.LastName;
+                user.Gender = userModel.Gender;
+
+                var result = _userManager.UpdateAsync(user);
+
+                return OperationResult.Success;
+            }
+
+            return OperationResult.Failed(new[] { "User does not exists" });
+        }
+
+        // ----------------------------------------
+        // private methods
+
+        private string[] GetErrors(IEnumerable<IdentityError> errors)
+        {
+            return errors.Select(x => x.Description).ToArray();
         }
     }
 }

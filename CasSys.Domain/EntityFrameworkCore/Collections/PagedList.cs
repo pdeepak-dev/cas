@@ -66,12 +66,12 @@ namespace CasSys.Domain.EntityFrameworkCore.Collections
             if (source is IQueryable<T> queryable)
             {
                 TotalCount = queryable.Count();
-                Items = queryable.Skip((PageIndex - 1) * PageIndex).Take(PageSize).ToList();
+                Items = queryable.Skip((PageIndex - 1) * PageSize).Take(PageSize).ToList();
             }
             else
             {
                 TotalCount = source.Count();
-                Items = source.Skip((PageIndex - 1) * PageIndex).Take(PageSize).ToList();
+                Items = source.Skip((PageIndex - 1) * PageSize).Take(PageSize).ToList();
             }
 
             TotalPages = (int)Math.Ceiling(TotalCount / (double)PageSize);
@@ -148,14 +148,14 @@ namespace CasSys.Domain.EntityFrameworkCore.Collections
             if (source is IQueryable<TSource> queryable)
             {
                 TotalCount = queryable.Count();
-                var items = queryable.Skip((PageIndex - 1) * PageIndex).Take(PageSize).ToArray();
+                var items = queryable.Skip((PageIndex - 1) * PageSize).Take(PageSize).ToArray();
 
                 Items = new List<TResult>(converter(items));
             }
             else
             {
                 TotalCount = source.Count();
-                var items = source.Skip((PageIndex - 1) * PageIndex).Take(PageSize).ToArray();
+                var items = source.Skip((PageIndex - 1) * PageSize).Take(PageSize).ToArray();
 
                 Items = new List<TResult>(converter(items));
             }

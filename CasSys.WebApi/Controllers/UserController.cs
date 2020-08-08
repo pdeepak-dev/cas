@@ -1,12 +1,9 @@
-﻿using CasSys.Application.BizServices.Core;
-using CasSys.Application.BizServices.Interfaces;
-using CasSys.Application.Dtos;
+﻿using CasSys.Application.BizServices.Interfaces;
 using CasSys.Application.RequestCommands;
 using CasSys.Application.RequestModels;
 using CasSys.WebApi.Infrastructure.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CasSys.WebApi.Controllers
@@ -22,25 +19,16 @@ namespace CasSys.WebApi.Controllers
             this._userManagementService = userManagementService;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Get()
-        {
-            var users = _userManagementService.GetUsers();
-
-            if (users == null)
-                return NotFound();
-
-            return Ok(OperationResult<IEnumerable<UserDto>>.Success(users));
-        }
-
-        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get([FromQuery] PaginatedRequestCommand cmd)
         {
-            return Ok();
+            var users = _userManagementService.GetUsers(cmd.Page, cmd.Take);
+
+            if (users == null)
+                return NotFound();
+
+            return Ok(users);
         }
 
         [HttpGet("roles")]
@@ -56,11 +44,35 @@ namespace CasSys.WebApi.Controllers
             return Ok(roles);
         }
 
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Create([FromBody] UserRequestModel model)
+        {
+            var result = await _userManagementService.CreateUser(model);
+
+            if (result.Succeeded)
+                return Ok(result);
+            else
+                return BadRequest((object)result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(UserUpdateRequestModel model)
+        {
+            var result = await _userManagementService.UpdateUser(model);
+
+            if (result.Succeeded)
+                return Ok(result);
+            else
+                return BadRequest((object)result);
+        }
+
         [HttpPost("create-role")]
         [ValidateModel()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] RoleRequestModel model)
+        public async Task<IActionResult> CreateRole([FromBody] RoleRequestModel model)
         {
             var result = await _userManagementService.CreateRoleAsync(model);
 

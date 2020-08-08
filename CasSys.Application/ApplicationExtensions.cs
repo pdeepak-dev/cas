@@ -11,9 +11,8 @@ namespace CasSys.Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services
-                .AddAutoMapper(Assembly.GetExecutingAssembly());
-
-            services
+                .AddAutoMapper(Assembly.GetExecutingAssembly())
+                .AddScoped<IAuthService, AuthService>()
                 .AddScoped<IUserManagementService, UserManagementService>();
 
             return services;

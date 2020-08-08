@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using CasSys.Application.RequestModels;
+using CasSys.Application.BizServices.Interfaces;
+using System.Threading.Tasks;
 
 namespace CasSys.WebApi.Controllers
 {
@@ -6,5 +9,18 @@ namespace CasSys.WebApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly IAuthService _authService;
+
+        public AccountController(IAuthService authService)
+        {
+            this._authService = authService;
+        }
+
+        public async Task<IActionResult> Login(AuthenticateRequestModel model)
+        {
+            var result = await _authService.Validate(model);
+
+            return null;
+        }
     }
 }

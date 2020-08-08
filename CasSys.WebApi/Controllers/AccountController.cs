@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using CasSys.Application.RequestModels;
 using CasSys.Application.BizServices.Interfaces;
-using System.Threading.Tasks;
 
 namespace CasSys.WebApi.Controllers
 {
@@ -20,7 +20,14 @@ namespace CasSys.WebApi.Controllers
         {
             var result = await _authService.Validate(model);
 
-            return null;
+            if (result.Succeeded)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return Unauthorized(result);
+            }
         }
     }
 }

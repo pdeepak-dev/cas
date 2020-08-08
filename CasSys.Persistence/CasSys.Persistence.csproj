@@ -7,6 +7,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200807142728_Initial Database Setup.cs" />
     <Compile Remove="Migrations\20200807142728_Initial Database Setup.Designer.cs" />
+    <Compile Remove="Migrations\20200808095937_InitialCreate.cs" />
+    <Compile Remove="Migrations\20200808095937_InitialCreate.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

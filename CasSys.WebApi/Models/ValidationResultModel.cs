@@ -7,6 +7,8 @@ namespace CasSys.WebApi.Models
 {
     public class ValidationResultModel
     {
+        public bool Succeeded { get; set; } = false;
+
         public string Message { get; }
 
         public List<ValidationError> Errors { get; }

@@ -17,4 +17,9 @@
     <ProjectReference Include="..\CasSys.Persistence\CasSys.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\Middlewares\" />
+    <Folder Include="Infrastructure\Attributes\" />
+  </ItemGroup>
+
 </Project>

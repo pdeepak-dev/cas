@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using CasSys.Domain.Entities.Core;
-using CasSys.Domain.Entities.Identity;
 
-namespace CasSys.Domain.Entities
+namespace CasSys.Application.Dtos
 {
-    public class Job : Entity
+    public class JobDto
     {
         public int Id { get; set; }
 
@@ -27,12 +25,12 @@ namespace CasSys.Domain.Entities
 
         public bool IsFilled { get; set; }
 
-        public string UserId { get; set; }
+        public int UserId { get; set; }
 
         // -----------------------------------------------
         // Relationships
 
-        public AppUser User { get; set; }
-        public ICollection<Applicant> Applicants { get; set; }
+        public UserDto User { get; set; }
+        public IList<ApplicantDto> Applicants { get; set; }
     }
 }

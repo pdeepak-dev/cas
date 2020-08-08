@@ -19,27 +19,18 @@ namespace CasSys.Persistence.Migrations
 
             modelBuilder.Entity("CasSys.Domain.Entities.Applicant", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("JobId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("JobId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "JobId");
 
                     b.HasIndex("JobId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Applicant");
                 });
@@ -160,10 +151,7 @@ namespace CasSys.Persistence.Migrations
                         .HasColumnType("varchar(60)")
                         .HasMaxLength(60);
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Website")
@@ -172,7 +160,7 @@ namespace CasSys.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Job");
                 });
@@ -314,21 +302,23 @@ namespace CasSys.Persistence.Migrations
             modelBuilder.Entity("CasSys.Domain.Entities.Applicant", b =>
                 {
                     b.HasOne("CasSys.Domain.Entities.Job", "Job")
-                        .WithMany()
+                        .WithMany("Applicants")
                         .HasForeignKey("JobId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("CasSys.Domain.Entities.Identity.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1");
+                        .WithMany("Applicants")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CasSys.Domain.Entities.Job", b =>
                 {
                     b.HasOne("CasSys.Domain.Entities.Identity.AppUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

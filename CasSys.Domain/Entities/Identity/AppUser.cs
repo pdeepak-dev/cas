@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace CasSys.Domain.Entities.Identity
 {
@@ -7,5 +8,10 @@ namespace CasSys.Domain.Entities.Identity
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Gender { get; set; }
+
+        // -----------------------------------------------
+        // Relationships
+
+        public ICollection<Applicant> Applicants { get; set; }
     }
 }

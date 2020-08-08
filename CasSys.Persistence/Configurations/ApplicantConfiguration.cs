@@ -9,10 +9,22 @@ namespace CasSys.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Applicant> builder)
         {
             builder
-                .HasKey(x => new { x.Id });
+                .HasKey(x => new { x.UserId, x.JobId });
 
             builder
                 .Property(x => x.CreatedAt).HasColumnType("datetime");
+
+            // Relationships
+
+            builder
+                .HasOne(p => p.Job)
+                    .WithMany(p => p.Applicants).HasForeignKey(p => p.JobId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder
+                .HasOne(p => p.User)
+                    .WithMany(p => p.Applicants).HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CasSys.Domain.EntityFrameworkCore.Collections
 {
@@ -17,5 +18,19 @@ namespace CasSys.Domain.EntityFrameworkCore.Collections
         /// <returns>An instance of the inherited from <see cref="IPagedList{T}"/> interface.</returns>
         public static IPagedList<T> ToPagedList<T>(this IEnumerable<T> source, int pageIndex, int pageSize)
             => new PagedList<T>(source, pageIndex, pageSize);
+
+        /// <summary>
+        /// Converts the specified source to <see cref="IPagedList{T}"/> by the specified <paramref name="converter"/>, <paramref name="pageIndex"/> and <paramref name="pageSize"/>
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="source">The source to convert.</param>
+        /// <param name="converter">The converter to change the <typeparamref name="TSource"/> to <typeparamref name="TResult"/>.</param>
+        /// <param name="pageIndex">The page index.</param>
+        /// <param name="pageSize">The page size.</param>
+        /// <returns>An instance of the inherited from <see cref="IPagedList{T}"/> interface.</returns>
+        public static IPagedList<TResult> ToPagedList<TSource, TResult>(this IEnumerable<TSource> source,
+            Func<IEnumerable<TSource>, IEnumerable<TResult>> converter, int pageIndex, int pageSize)
+            => new PagedList<TSource, TResult>(source, converter, pageIndex, pageSize);
     }
 }

@@ -2,12 +2,15 @@ using System.Net;
 using Newtonsoft.Json;
 using CasSys.Application;
 using CasSys.Persistence;
+using CasSys.WebApi.Settings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using CasSys.WebApi.Infrastructure.Filters;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CasSys.WebApi
@@ -24,11 +27,19 @@ namespace CasSys.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddControllers()
-                .AddNewtonsoftJson(opt =>
+                .AddControllers(options =>
                 {
-                    opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.Filters.Add<ApiKeyAuthAttribute>();
+                })
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
+
+            // configure strongly typed settings objects
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
 
             services.AddCors();
 

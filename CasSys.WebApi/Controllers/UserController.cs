@@ -45,9 +45,25 @@ namespace CasSys.WebApi.Controllers
         }
 
         [HttpPut]
+        [ValidateModel()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update(UserUpdateRequestModel model)
         {
             var result = await _userManagementService.UpdateUser(model);
+
+            if (result.Succeeded)
+                return Ok(result);
+            else
+                return BadRequest((object)result);
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete(UserBaseRequestModel model)
+        {
+            var result = await _userManagementService.DeleteUser(model);
 
             if (result.Succeeded)
                 return Ok(result);

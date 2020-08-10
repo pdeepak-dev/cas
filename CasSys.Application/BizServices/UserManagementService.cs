@@ -123,12 +123,33 @@ namespace CasSys.Application.BizServices
                 user.LastName = userModel.LastName;
                 user.Gender = userModel.Gender;
 
-                var result = _userManager.UpdateAsync(user);
+                var result = await _userManager.UpdateAsync(user);
 
                 return OperationResult.Success;
             }
 
             return OperationResult.Failed(new[] { "User does not exists" });
+        }
+
+        public async Task<OperationResult> DeleteUser(UserBaseRequestModel userModel)
+        {
+            var user = await _userManager.FindByIdAsync(userModel.UserId);
+
+            if (user != null)
+            {
+                IdentityResult result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return OperationResult.Success;
+                }
+                else
+                {
+                    return OperationResult.Failed(GetErrors(result.Errors));
+                }
+            }
+
+            return OperationResult.Failed(new[] { "User not found" });
         }
 
         // ----------------------------------------

@@ -21,6 +21,8 @@ namespace CasSys.Application.BizServices.Interfaces
 
         Task<OperationResult> UpdateUser(UserUpdateRequestModel userModel);
 
+        Task<OperationResult> DeleteUser(UserBaseRequestModel userModel);
+
         IEnumerable<RoleDto> AllRoles { get; }
         IEnumerable<RoleDto> GetRoles();
 

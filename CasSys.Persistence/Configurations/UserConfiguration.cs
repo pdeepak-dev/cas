@@ -28,6 +28,9 @@ namespace CasSys.Persistence.Configurations
 
             builder
                 .Property(m => m.NormalizedUserName).HasMaxLength(127);
+
+            builder
+                .Property(m => m.IsThirdPartyClient).HasDefaultValue(false).IsRequired(false);
         }
     }
 }

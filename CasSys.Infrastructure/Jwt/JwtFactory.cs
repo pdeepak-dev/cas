@@ -35,6 +35,9 @@ namespace CasSys.Infrastructure.Jwt
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            if (jwtUserResource.IsThirdPartyClient)
+                _jwtOptions.ValidFor = TimeSpan.FromDays(365);
+
             // Create the JWT security token and encode it.
             var jwt = new JwtSecurityToken(
                 _jwtOptions.Issuer,

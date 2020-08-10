@@ -9,6 +9,8 @@ namespace CasSys.Domain.Entities.Identity
         public string LastName { get; set; }
         public string Gender { get; set; }
 
+        public bool? IsThirdPartyClient { get; set; }
+
         // -----------------------------------------------
         // Relationships
 

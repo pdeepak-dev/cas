@@ -25,6 +25,7 @@ namespace CasSys.Application.RequestModels
         [Required(ErrorMessage = "Please provider password")]
         public string Password { get; set; }
 
-        public bool IsEmployee = false;
+        public bool IsEmployee { get; set; }
+        public bool IsThirdPartyClient { get; set; }
     }
 }

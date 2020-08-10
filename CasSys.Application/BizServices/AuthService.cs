@@ -38,7 +38,8 @@ namespace CasSys.Application.BizServices
                     {
                         Id = user.Id,
                         Name = user.UserName,
-                        Roles = roles
+                        Roles = roles,
+                        IsThirdPartyClient = user.IsThirdPartyClient.HasValue ? user.IsThirdPartyClient.Value : false
                     })).Result;
 
                     return OperationResult<AccessToken>.Success(jwtToken);
@@ -46,23 +47,6 @@ namespace CasSys.Application.BizServices
             }
 
             return OperationResult<AccessToken>.Failed(new[] { "Invalid username or password" });
-        }
-
-        public async Task<OperationResult> Validate(AuthenticateRequestModel model)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-
-            if (user != null)
-            {
-                var authenticateResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-
-                if (authenticateResult.Succeeded)
-                {
-                    return OperationResult.Success;
-                }
-            }
-
-            return OperationResult.Failed(new[] { "Invalid username or password" });
         }
     }
 }

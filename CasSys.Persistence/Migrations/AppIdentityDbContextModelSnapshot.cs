@@ -62,6 +62,11 @@ namespace CasSys.Persistence.Migrations
                         .HasColumnType("varchar(10)")
                         .HasMaxLength(10);
 
+                    b.Property<bool?>("IsThirdPartyClient")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("LastName")
                         .HasColumnType("varchar(60)")
                         .HasMaxLength(60);

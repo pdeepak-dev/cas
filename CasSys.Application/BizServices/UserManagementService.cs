@@ -34,16 +34,12 @@ namespace CasSys.Application.BizServices
         {
             var user = new AppUser
             {
+                UserName = userModel.UserName,
                 FirstName = userModel.FirstName,
                 LastName = userModel.LastName,
                 Email = userModel.Email,
                 Gender = userModel.Gender
             };
-
-            if (!userModel.IsEmployee)
-            {
-                user.UserName = userModel.UserName;
-            }
 
             IdentityResult result = await _userManager.CreateAsync(user, userModel.Password);
 

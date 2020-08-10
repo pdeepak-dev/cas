@@ -16,9 +16,10 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using CasSys.WebApi.Infrastructure.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace CasSys.WebApi
 {
@@ -33,16 +34,13 @@ namespace CasSys.WebApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddControllers(options =>
-                {
-                    options.Filters.Add<ApiKeyAuthAttribute>();
-                })
-                .AddNewtonsoftJson(options =>
-                {
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                });
+            services.AddPersistence(Configuration);
+
+            services.AddApplication();
+
+            services.AddInfrastructure();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
 
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -55,40 +53,39 @@ namespace CasSys.WebApi
             var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
 
             // Configure JwtIssuerOptions
-
             services.Configure<JwtIssuerOptions>(options =>
             {
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
                 options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
                 options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha512Signature);
+                options.ValidFor = TimeSpan.FromMinutes(1);
             });
-
-            var tokenValidationParameters = new TokenValidationParameters()
-            {
-                ValidateIssuer = true,
-                ValidIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)],
-
-                ValidateAudience = true,
-                ValidAudience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)],
-
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = signingKey,
-
-                ValidateLifetime = true,
-                // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-                ClockSkew = TimeSpan.Zero
-            };
 
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(configureOptions =>
+            }).AddJwtBearer(configureOptions =>
             {
                 configureOptions.ClaimsIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
-                configureOptions.TokenValidationParameters = tokenValidationParameters;
                 configureOptions.SaveToken = true;
+                configureOptions.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)],
+
+                    ValidateAudience = true,
+                    ValidAudience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)],
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = signingKey,
+
+                    RequireExpirationTime = true,
+                    ValidateLifetime = true,
+                    // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
+                    ClockSkew = TimeSpan.Zero
+                };
 
                 configureOptions.Events = new JwtBearerEvents
                 {
@@ -104,13 +101,16 @@ namespace CasSys.WebApi
                 };
             });
 
-            services.AddCors();
-
-            services.AddPersistence(Configuration);
-
-            services.AddApplication();
-
-            services.AddInfrastructure();
+            services
+                .AddCors()
+                .AddMvc(options =>
+                {
+                    options.EnableEndpointRouting = false;
+                }).AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -134,7 +134,6 @@ namespace CasSys.WebApi
                         {
                             context.Response.Headers.Add("Application-Error", error.Error.Message);
                             context.Response.Headers.Add("Access-Control-Expose-Headers", "Application-Error");
-                            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
                             await context.Response.WriteAsync(error.Error.Message);
                         }
@@ -142,21 +141,11 @@ namespace CasSys.WebApi
                 });
             }
 
+            app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
             app.UseAuthentication();
 
-            app.UseRouting();
-
-            app.UseAuthentication();
-
-            app.UseAuthorization();
-
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers().RequireAuthorization();
-            });
+            app.UseMvc();
         }
 
         public IConfiguration Configuration { get; }

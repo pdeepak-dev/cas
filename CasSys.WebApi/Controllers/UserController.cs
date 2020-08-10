@@ -44,19 +44,6 @@ namespace CasSys.WebApi.Controllers
             return Ok(roles);
         }
 
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] UserRequestModel model)
-        {
-            var result = await _userManagementService.CreateUser(model);
-
-            if (result.Succeeded)
-                return Ok(result);
-            else
-                return BadRequest((object)result);
-        }
-
         [HttpPut]
         public async Task<IActionResult> Update(UserUpdateRequestModel model)
         {

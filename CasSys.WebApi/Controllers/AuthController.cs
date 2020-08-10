@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using CasSys.Application.RequestModels;
 using CasSys.Application.BizServices.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CasSys.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -26,10 +28,10 @@ namespace CasSys.WebApi.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(result?.Entity);
+                return Ok(result);
             }
 
-            return Unauthorized(result?.Errors);
+            return Unauthorized(result);
         }
     }
 }

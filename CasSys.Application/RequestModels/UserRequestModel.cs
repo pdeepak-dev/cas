@@ -25,9 +25,6 @@ namespace CasSys.Application.RequestModels
         [Required(ErrorMessage = "Please provider password")]
         public string Password { get; set; }
 
-        [Compare(nameof(Password))]
-        public string ConfirmPassword { get; set; }
-
         public bool IsEmployee = false;
     }
 }

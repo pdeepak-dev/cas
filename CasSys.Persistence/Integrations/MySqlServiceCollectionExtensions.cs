@@ -29,8 +29,7 @@ namespace CasSys.Persistence.Integrations
                     RequireUppercase = false,
                     RequireNonAlphanumeric = false,
                 })
-                .AddEntityFrameworkStores<AppIdentityDbContext>()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<AppIdentityDbContext>();
 
             return services;
         }

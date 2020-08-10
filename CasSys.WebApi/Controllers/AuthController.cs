@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using CasSys.Application.RequestModels;
 using CasSys.Application.BizServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using CasSys.WebApi.Infrastructure.Filters;
 
 namespace CasSys.WebApi.Controllers
 {
@@ -20,6 +21,7 @@ namespace CasSys.WebApi.Controllers
         }
 
         [HttpPost("login")]
+        [ValidateModel()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Login([FromBody] AuthenticateRequestModel authenticateRequestModel)

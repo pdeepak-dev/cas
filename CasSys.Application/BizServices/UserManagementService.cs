@@ -119,9 +119,7 @@ namespace CasSys.Application.BizServices
 
             if (user != null)
             {
-                user.FirstName = userModel.FirstName;
-                user.LastName = userModel.LastName;
-                user.Gender = userModel.Gender;
+                _mapper.Map<UserUpdateRequestModel, AppUser>(userModel, user);
 
                 var result = await _userManager.UpdateAsync(user);
 

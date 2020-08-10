@@ -21,6 +21,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace CasSys.WebApi
 {
@@ -59,7 +61,7 @@ namespace CasSys.WebApi
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
                 options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
                 options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha512Signature);
-                options.ValidFor = TimeSpan.FromMinutes(1);
+                options.ValidFor = TimeSpan.FromMinutes(30);
             });
 
             services.AddAuthentication(options =>
@@ -100,6 +102,24 @@ namespace CasSys.WebApi
                         return Task.CompletedTask;
                     }
                 };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                var rolesDict = new SortedDictionary<string, string>()
+                {
+                    { "AdminPolicy", "Admin" },
+                    { "EmployeePolicy", "Employee" },
+                    { "EmployeerPolicy", "Employeer" }
+                };
+
+                foreach (KeyValuePair<string, string> kvp in rolesDict)
+                {
+                    options.AddPolicy(kvp.Key, policy =>
+                    {
+                        policy.RequireClaim(ClaimTypes.Role, rolesDict[kvp.Key]);
+                    });
+                }
             });
 
             services

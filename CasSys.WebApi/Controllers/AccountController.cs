@@ -4,6 +4,7 @@ using CasSys.Application.RequestModels;
 using CasSys.Application.BizServices.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using CasSys.WebApi.Infrastructure.Filters;
 
 namespace CasSys.WebApi.Controllers
 {
@@ -22,6 +23,7 @@ namespace CasSys.WebApi.Controllers
         }
 
         [HttpPost("register")]
+        [ValidateModel()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] UserRequestModel model)

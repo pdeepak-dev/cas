@@ -6,6 +6,7 @@ namespace CasSys.Application.Jwt
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public string Email { get; set; }
         public bool IsThirdPartyClient { get; set; }
         public IEnumerable<string> Roles { get; set; }
     }

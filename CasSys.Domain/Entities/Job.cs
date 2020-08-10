@@ -6,7 +6,7 @@ using CasSys.Domain.Entities.Identity;
 
 namespace CasSys.Domain.Entities
 {
-    public class Job : Entity
+    public class Job : Entity, IAggregateRoot
     {
         public int Id { get; set; }
 

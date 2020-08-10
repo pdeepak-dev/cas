@@ -38,6 +38,7 @@ namespace CasSys.Application.BizServices
                     {
                         Id = user.Id,
                         Name = user.UserName,
+                        Email = user.Email,
                         Roles = roles,
                         IsThirdPartyClient = user.IsThirdPartyClient.HasValue ? user.IsThirdPartyClient.Value : false
                     })).Result;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace CasSys.Application.Dtos
@@ -25,7 +24,7 @@ namespace CasSys.Application.Dtos
 
         public bool IsFilled { get; set; }
 
-        public int UserId { get; set; }
+        public string UserId { get; set; }
 
         // -----------------------------------------------
         // Relationships

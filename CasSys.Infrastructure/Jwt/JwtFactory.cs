@@ -26,6 +26,7 @@ namespace CasSys.Infrastructure.Jwt
             {
                 new Claim(ClaimTypes.NameIdentifier, jwtUserResource.Id),
                 new Claim(ClaimTypes.Name, jwtUserResource.Name),
+                new Claim(ClaimTypes.Email, jwtUserResource.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                 new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
             };

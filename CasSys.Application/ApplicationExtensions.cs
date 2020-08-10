@@ -13,7 +13,8 @@ namespace CasSys.Application
             services
                 .AddAutoMapper(Assembly.GetExecutingAssembly())
                 .AddScoped<IAuthService, AuthService>()
-                .AddScoped<IUserManagementService, UserManagementService>();
+                .AddScoped<IUserManagementService, UserManagementService>()
+                .AddScoped<IJobManagementService, JobManagementService>();
 
             return services;
         }

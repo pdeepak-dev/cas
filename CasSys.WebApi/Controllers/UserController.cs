@@ -25,7 +25,7 @@ namespace CasSys.WebApi.Controllers
         {
             var users = _userManagementService.GetUsers(cmd.Page, cmd.Take);
 
-            if (users == null)
+            if (users.Entity.Items == null)
                 return NotFound();
 
             return Ok(users);
@@ -38,7 +38,7 @@ namespace CasSys.WebApi.Controllers
         {
             var roles = _userManagementService.GetRoles(cmd.Page, cmd.Take);
 
-            if (roles == null)
+            if (roles.Entity.Items == null)
                 return NotFound();
 
             return Ok(roles);
@@ -47,7 +47,7 @@ namespace CasSys.WebApi.Controllers
         [HttpPut]
         [ValidateModel()]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(UserUpdateRequestModel model)
         {
             var result = await _userManagementService.UpdateUser(model);
@@ -55,7 +55,7 @@ namespace CasSys.WebApi.Controllers
             if (result.Succeeded)
                 return Ok(result);
             else
-                return BadRequest((object)result);
+                return NotFound((object)result);
         }
 
         [HttpDelete]

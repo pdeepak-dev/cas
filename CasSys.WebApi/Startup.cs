@@ -122,6 +122,8 @@ namespace CasSys.WebApi
                 }
             });
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
             services
                 .AddCors()
                 .AddMvc(options =>

@@ -14,6 +14,7 @@ namespace CasSys.Infrastructure
             services.TryAddSingleton<IJwtFactory, JwtFactory>();
             services.TryAddSingleton<ITokenFactory, TokenFactory>();
             services.TryAddSingleton<IJwtTokenValidator, JwtTokenValidator>();
+            services.TryAddScoped<IJwtHttpContext, JwtHttpContext>();
 
             return services;
         }

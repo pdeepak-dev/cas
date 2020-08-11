@@ -14,6 +14,7 @@ namespace CasSys.Application.BizServices.Interfaces
         IEnumerable<UserDto> AllUsers { get; }
         IEnumerable<UserDto> GetUsers();
         Task<UserDto> GetUserById(string userId);
+        Task<OperationResult<UserWithRoleDto>> GetUserWithRolesByEmailAsync(string email);
 
         OperationResult<IPagedList<UserDto>> GetUsers(int pageIndex, int pageSize);
 

@@ -14,4 +14,10 @@ namespace CasSys.Application.Dtos
         public string PhoneNumber { get; set; }
         public bool? IsThirdPartyClient { get; set; }
     }
+
+    public class UserWithRoleDto
+    {
+        public UserDto User { get; set; }
+        public IEnumerable<RoleDto> Roles { get; set; }
+    }
 }

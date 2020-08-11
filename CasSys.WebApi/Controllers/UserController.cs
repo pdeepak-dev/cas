@@ -4,6 +4,7 @@ using CasSys.Application.RequestModels;
 using CasSys.WebApi.Infrastructure.Filters;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace CasSys.WebApi.Controllers
@@ -19,6 +20,7 @@ namespace CasSys.WebApi.Controllers
             this._userManagementService = userManagementService;
         }
 
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get([FromQuery] PaginatedRequestCommand cmd)
@@ -26,9 +28,23 @@ namespace CasSys.WebApi.Controllers
             var users = _userManagementService.GetUsers(cmd.Page, cmd.Take);
 
             if (users.Entity.Items == null)
-                return NotFound();
+                return NotFound(users);
 
             return Ok(users);
+        }
+
+        [HttpGet("{email}")]
+        [ValidateModel()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByEmail([Required(ErrorMessage = "Please provider email address")] string email)
+        {
+            var userWithRoles = await _userManagementService.GetUserWithRolesByEmailAsync(email);
+
+            if (userWithRoles.Entity == null)
+                return NotFound(userWithRoles);
+
+            return Ok(userWithRoles);
         }
 
         [HttpGet("roles")]

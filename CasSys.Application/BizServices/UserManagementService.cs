@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
-using System.Linq;
-using System.Threading.Tasks;
-using CasSys.Application.Dtos;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using CasSys.Domain.Entities.Identity;
-using CasSys.Application.RequestModels;
 using CasSys.Application.BizServices.Core;
 using CasSys.Application.BizServices.Interfaces;
+using CasSys.Application.Dtos;
+using CasSys.Application.RequestModels;
+using CasSys.Domain.Entities.Identity;
 using CasSys.Domain.EntityFrameworkCore.Collections;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace CasSys.Application.BizServices
 {
@@ -148,6 +148,23 @@ namespace CasSys.Application.BizServices
             }
 
             return OperationResult.Failed(new[] { "User not found" });
+        }
+
+        public async Task<OperationResult<UserWithRoleDto>> GetUserWithRolesByEmailAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                return OperationResult<UserWithRoleDto>.Success(new UserWithRoleDto
+                {
+                    User = _mapper.Map<UserDto>(user),
+                    Roles = roles.Select(x => new RoleDto { Name = x, NormalizedName = x.ToUpper() })
+                });
+            }
+
+            return OperationResult<UserWithRoleDto>.Failed(new[] { "User not found" });
         }
 
         // ----------------------------------------

@@ -8,10 +8,14 @@ using CasSys.Domain.Entities;
 using CasSys.Domain.Entities.Identity;
 using CasSys.Domain.EntityFrameworkCore.Collections;
 using CasSys.Domain.EntityFrameworkCore.UnitOfWorks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace CasSys.Application.BizServices
@@ -22,19 +26,23 @@ namespace CasSys.Application.BizServices
         private readonly UserManager<AppUser> _userManager;
 
         private readonly IMapper _mapper;
+        private readonly IJwtHttpContext _jwt;
 
-        public JobManagementService(UserManager<AppUser> userManager, IUnitOfWork uow, IMapper mapper)
+        public JobManagementService(UserManager<AppUser> userManager, IUnitOfWork uow, IMapper mapper, IJwtHttpContext jwt)
         {
             this._uow = uow;
             this._userManager = userManager;
             this._mapper = mapper;
+            this._jwt = jwt;
         }
 
-        public async Task<OperationResult> ApplyForJob(ApplicantRequestModel model, JwtUserResource jwt)
+        public async Task<OperationResult> ApplyForJob(ApplicantRequestModel model)
         {
             var _jobRepo = _uow.GetRepository<Job>();
 
             var _applicantRepo = _uow.GetRepository<Applicant>();
+
+            var jwt = _jwt.GetJwtUserResource();
 
             // check if user has already applied for job
             var applicantJobStatus = _applicantRepo.GetFirstOrDefault(predicate: x => x.JobId == model.JobId && jwt.Id == x.UserId) != null;
@@ -73,9 +81,11 @@ namespace CasSys.Application.BizServices
             }
         }
 
-        public async Task<OperationResult<JobDto>> CreateJobAsync(JobRequestModel model, JwtUserResource jwt)
+        public async Task<OperationResult<JobDto>> CreateJobAsync(JobRequestModel model)
         {
             var _jobRepo = _uow.GetRepository<Job>();
+
+            var jwt = _jwt.GetJwtUserResource();
             var user = await _userManager.FindByIdAsync(jwt.Id);
 
             if (user != null)
@@ -134,6 +144,18 @@ namespace CasSys.Application.BizServices
             return OperationResult<IPagedList<JobDto>>.Success(jobs.ToPagedList(converter: x => _mapper.Map<JobDto>(x)));
         }
 
+        public async Task<OperationResult<IPagedList<JobDto>>> GetAllJobsByUserIdAsync(int pageIndex, int pageSize)
+        {
+            var _jobRepo = _uow.GetRepository<Job>();
+
+            var jwt = _jwt.GetJwtUserResource();
+
+            var jobs = await _jobRepo.GetPagedListAsync(predicate: x => x.UserId == jwt.Id,
+                include: x => x.Include(y => y.User).Include(y => y.Applicants).ThenInclude(y => y.User), pageIndex: pageIndex, pageSize: pageSize);
+
+            return OperationResult<IPagedList<JobDto>>.Success(jobs.ToPagedList(converter: x => _mapper.Map<JobDto>(x)));
+        }
+
         public async Task<OperationResult<JobApplicantDto>> GetApplicantsByJobIdAsync(int jobId)
         {
             var _jobRepo = _uow.GetRepository<Job>();
@@ -149,6 +171,18 @@ namespace CasSys.Application.BizServices
             };
 
             return OperationResult<JobApplicantDto>.Success(jobApplicantDTO);
+        }
+
+        public async Task<OperationResult<IEnumerable<ApplicantDto>>> GetApplicantsByUserIdAsync()
+        {
+            var _applicantRepo = _uow.GetRepository<Applicant>();
+
+            var jwt = _jwt.GetJwtUserResource();
+
+            var applicants = await _applicantRepo.GetAllAsync(predicate: x => x.UserId == jwt.Id,
+                include: x => x.Include(y => y.User).Include(y => y.Job));
+
+            return OperationResult<IEnumerable<ApplicantDto>>.Success(applicants.Select(x => _mapper.Map<ApplicantDto>(x)));
         }
 
         public async Task<OperationResult<JobDto>> GetJobByIdAsync(int id)
@@ -191,9 +225,11 @@ namespace CasSys.Application.BizServices
             return OperationResult<JobDto>.Failed(new[] { $"Unable to mark job to be filled with id: {jobId}" });
         }
 
-        public async Task<OperationResult> UpdateJobAsync(JobUpdateRequestModel model, JwtUserResource jwt)
+        public async Task<OperationResult> UpdateJobAsync(JobUpdateRequestModel model)
         {
             var _jobRepo = _uow.GetRepository<Job>();
+
+            var jwt = _jwt.GetJwtUserResource();
 
             var jobEntity = await _jobRepo.GetFirstOrDefaultAsync(predicate: x => x.Id == model.Id, disableTracking: false);
 

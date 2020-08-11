@@ -1,7 +1,6 @@
 ﻿using CasSys.Application.BizServices.Interfaces;
 using CasSys.Application.RequestCommands;
 using CasSys.Application.RequestModels;
-using CasSys.WebApi.Infrastructure.Extensions;
 using CasSys.WebApi.Infrastructure.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +47,20 @@ namespace CasSys.WebApi.Controllers
             return Ok(users);
         }
 
+        [HttpGet("user-specific-jobs")]
+        [Authorize(Policy = "EmployeerPolicy")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllJobsByUserId([FromQuery] PaginatedRequestCommand cmd)
+        {
+            var users = await _jobService.GetAllJobsByUserIdAsync(cmd.Page, cmd.Take);
+
+            if (users?.Entity?.Items == null)
+                return NotFound(users);
+
+            return Ok(users);
+        }
+
         [HttpGet("{jobId:int}/applicants")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -68,7 +81,7 @@ namespace CasSys.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] JobRequestModel model)
         {
-            var result = await _jobService.CreateJobAsync(model, HttpContext.GetJwtUserResource());
+            var result = await _jobService.CreateJobAsync(model);
 
             if (!result.Succeeded)
                 return BadRequest(result);
@@ -83,7 +96,7 @@ namespace CasSys.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update(JobUpdateRequestModel model)
         {
-            var result = await _jobService.UpdateJobAsync(model, HttpContext.GetJwtUserResource());
+            var result = await _jobService.UpdateJobAsync(model);
 
             if (result.Succeeded)
                 return Ok(result);

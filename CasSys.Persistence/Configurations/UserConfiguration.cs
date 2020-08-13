@@ -8,8 +8,8 @@ namespace CasSys.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<AppUser> builder)
         {
-            builder
-                .ToTable("User");
+            //builder
+            //    .ToTable("User");
 
             builder
                 .Property(x => x.FirstName).HasMaxLength(60);

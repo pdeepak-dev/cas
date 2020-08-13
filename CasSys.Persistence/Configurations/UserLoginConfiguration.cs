@@ -8,8 +8,8 @@ namespace CasSys.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<IdentityUserLogin<string>> builder)
         {
-            builder
-                .ToTable("UserLogins");
+            //builder
+            //    .ToTable("UserLogins");
 
             builder
                 .Property(m => m.UserId).HasMaxLength(127);

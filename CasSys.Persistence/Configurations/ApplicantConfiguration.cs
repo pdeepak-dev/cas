@@ -9,6 +9,9 @@ namespace CasSys.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Applicant> builder)
         {
             builder
+                .ToTable("Applicants");
+
+            builder
                 .HasKey(x => new { x.UserId, x.JobId });
 
             builder

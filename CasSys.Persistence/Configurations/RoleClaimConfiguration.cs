@@ -8,8 +8,8 @@ namespace CasSys.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<IdentityRoleClaim<string>> builder)
         {
-            builder
-                .ToTable("RoleClaims");
+            //builder
+            //    .ToTable("RoleClaims");
 
             builder
                 .Property(m => m.RoleId).HasMaxLength(127);

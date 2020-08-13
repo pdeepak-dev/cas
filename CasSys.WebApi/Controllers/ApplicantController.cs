@@ -34,7 +34,7 @@ namespace CasSys.WebApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Policy = "EmployeerPolicy")]
+        [Authorize(Policy = "EmployerPolicy")]
         [HttpGet("{jobId:int}/by-user")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

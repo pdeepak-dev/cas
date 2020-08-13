@@ -47,9 +47,9 @@ namespace CasSys.Application.BizServices
             {
                 if (!userModel.IsEmployee)
                 {
-                    if (await _roleManager.RoleExistsAsync("Employeer"))
+                    if (await _roleManager.RoleExistsAsync("Employer"))
                     {
-                        await _userManager.AddToRoleAsync(user, "Employeer");
+                        await _userManager.AddToRoleAsync(user, "Employer");
                     }
                 }
                 else

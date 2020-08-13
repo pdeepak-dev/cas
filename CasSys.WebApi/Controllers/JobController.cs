@@ -48,7 +48,7 @@ namespace CasSys.WebApi.Controllers
         }
 
         [HttpGet("user-specific-jobs")]
-        [Authorize(Policy = "EmployeerPolicy")]
+        [Authorize(Policy = "EmployerPolicy")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllJobsByUserId([FromQuery] PaginatedRequestCommand cmd)
@@ -74,7 +74,7 @@ namespace CasSys.WebApi.Controllers
             return Ok(users);
         }
 
-        [Authorize(Policy = "EmployeerPolicy")]
+        [Authorize(Policy = "EmployerPolicy")]
         [HttpPost]
         [ValidateModel()]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -89,7 +89,7 @@ namespace CasSys.WebApi.Controllers
             return Ok(result);
         }
 
-        [Authorize(Policy = "EmployeerPolicy")]
+        [Authorize(Policy = "EmployerPolicy")]
         [HttpPut]
         [ValidateModel()]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -104,7 +104,7 @@ namespace CasSys.WebApi.Controllers
                 return BadRequest((object)result);
         }
 
-        [Authorize(Policy = "EmployeerPolicy")]
+        [Authorize(Policy = "EmployerPolicy")]
         [HttpPut("{jobId:int}/mark-fill")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -118,7 +118,7 @@ namespace CasSys.WebApi.Controllers
                 return BadRequest((object)result);
         }
 
-        [Authorize(Policy = "EmployeerPolicy")]
+        [Authorize(Policy = "EmployerPolicy")]
         [HttpDelete("{jobId:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

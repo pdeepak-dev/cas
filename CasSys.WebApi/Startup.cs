@@ -110,7 +110,7 @@ namespace CasSys.WebApi
                 {
                     { "AdminPolicy", "Admin" },
                     { "EmployeePolicy", "Employee" },
-                    { "EmployeerPolicy", "Employeer" }
+                    { "EmployerPolicy", "Employer" }
                 };
 
                 foreach (KeyValuePair<string, string> kvp in rolesDict)

@@ -61,7 +61,7 @@ namespace CasSys.WebApi
                 options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
                 options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
                 options.SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha512Signature);
-                options.ValidFor = TimeSpan.FromMinutes(30);
+                options.ValidFor = TimeSpan.FromDays(365);
             });
 
             services.AddAuthentication(options =>
